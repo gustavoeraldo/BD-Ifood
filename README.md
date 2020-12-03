@@ -1,6 +1,10 @@
+<p align="center">
+  <img src=".github/ifood-logo.png"></img>
+</p>
+
 # BD-iFood
 
-> Trabalho de banco de dados cujo o objetivo é modelar o sistema do ifood.
+> Trabalho de banco de dados cujo o objetivo é modelar um sistema que permita que usuários possam perdir comidas pelo celular/website. E o ifood está sendo utilizado como exemplo.
 
 
 <!-- 
@@ -62,5 +66,4 @@ O app informará as opções de restaurantes por **categorização** e critério
 
 <p align="center">
   <img src=".github/ifood-model.jpg"></img>
-  <p>Subject to :</p>
 </p>
