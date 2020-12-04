@@ -67,3 +67,10 @@ O app informará as opções de restaurantes por **categorização** e critério
 <p align="center">
   <img src=".github/ifood-model.jpg"></img>
 </p>
+
+
+## Modelo Lógico
+
+<p align="center">
+  <img src=".github/ifood-logic.jpg"></img>
+</p>
