@@ -1,12 +1,7 @@
 import psycopg2
+import sys
 
-'''
-cliente: 
-- buscar comida
-- buscar restaurante
-- fazer pedido
-
-'''
+from db import db
 
 class Cliente():
   def __init__(self, cpf, nome, email, senha, telefone1, telefone2):
@@ -17,22 +12,29 @@ class Cliente():
     self.telefone1 = telefone1
     self.telefone2 = telefone2
 
-    conn = psycopg2.connect(dbname="ifood", user="postgres", password="docker", host="localhost", port=5435)
-    cur = conn.cursor()
+  def Alterar_perfil(self):
+    return 'Perfil alterado com sucesso'
 
-    cur.execute(f"INSERT INTO cliente (cpf, nome, email, senha, telefone1) VALUES {cpf, nome, email, senha, telefone1};")
-    conn.commit()
-
-    cur.close()
-    conn.close()
-
-    print(f'Criando usuário {nome}')
-
-  def buscar_comida(self):
+  def Buscar_Comida(self):
     return 'lista de comidas'
 
-  def buscar_restaurante(self):
+  def Buscar_Restaurante(self):
     return 'buscar restaurante'
 
-  def fazer_pedido(self):
+  def Cadastrar(self):
+    conn = db.Init_db()
+    cur = conn.cursor()
+
+    try:
+      cur.execute(f"INSERT INTO cliente VALUES ({cpf, nome, email, senha, telefone1});")
+      conn.commit()
+    except OSError as err:
+      return f'Erro na criação do restaurante. {err}' 
+    
+    print('Usuário cadastrado com sucesso!')
+
+    db.Close(cur, conn)
+    return True
+
+  def Fazer_Pedido(self):
     return 'pedido concluído com sucesso !'
