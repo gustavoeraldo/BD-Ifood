@@ -5,7 +5,7 @@ from cliente import Cliente
 from restaurante import Restaurante
 from db import db
 
-def Pesquisa_Usuario(tabela, email, senha):
+def Pesquisa_Usuario(tabela, email, senha):#Identifica o tipo do usuário e retorna seus dados
   conn = db.Init_db()
   cur = conn.cursor()
  
@@ -75,14 +75,31 @@ def Menu(tipo_usuario, info_usuario):
   loop = True
 
   while loop:
-    print(f"\033[33m{'**'*8}*\n"
-      f"*\t Menu \t *\n*"
-      f"{'**'*8}*\033[37m\n")
+    print(f"\033[33m{'**'*9}\n"
+      f"*\t Menu \t *\n"
+      f"{'**'*9}\033[37m\n")
 
     if tipo_usuario == 'cliente':
-      print('buscar comida \n'
-            '- buscar restaurante\n'
-            '- fazer pedido')
+      cpf, nome, email, senha, telefone1, _ = info_usuario
+      cliente = Cliente(cpf, nome, email, senha, telefone1, _)
+
+      opcao = input('\033[36m[ 1 ] - Atualizar perfil\n'
+            '[ 2 ] - Buscar comida\n'
+            '[ 3 ] - Buscar restaurante\n'
+            '[ 4 ] - Susgestão do app\n'
+            '[ 5 ] - \033[31m Logout \033[37m\n')
+      
+      if opcao == '1':
+        loop = cliente.Alterar_Perfil()
+      elif opcao == '2':
+        loop = cliente.Buscar_Comida()
+      elif opcao == '3':
+        loop = cliente.Buscar_Restaurante()
+      elif opcao == '4':
+        loop = 'Sugestão do app (Ainda em desenvolvimento)'
+      elif opcao == '5':
+        loop = False
+
     elif tipo_usuario == 'restaurante':
       cnpj, email, senha, nome, entrega,aberto = info_usuario
       restaurante = Restaurante(cnpj, email, senha, nome, entrega,aberto)
@@ -107,23 +124,6 @@ def Menu(tipo_usuario, info_usuario):
 
 
 print('Bem vindo ao iFood!')
-
-'''
-voce já possui uma conta ?
-sim: goto (login)
-não: faz um cadastro 
-
-Login():
-caso cliente 
-  cliente dashboard
-caso restaurante 
-  restaurante dashboard
-
-Cadasto():
-  - escolher o tipo do usuário
-  - preencher os dados
-  - redirecionar para o dashboard
-'''
 
 if __name__ == '__main__':
 

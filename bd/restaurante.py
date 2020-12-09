@@ -36,9 +36,6 @@ class Restaurante:
     
     db.Close(cur, conn)
 
-  def Pesquisar_comida(self):
-    return 'comida selecionada: pizza'
-
   def Atualizar_Cardapio(self):
 
     loop = True

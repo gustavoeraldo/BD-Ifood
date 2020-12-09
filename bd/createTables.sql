@@ -20,19 +20,20 @@ CREATE TABLE endereco (
 
 -- Pedidos --
 CREATE TABLE pedido (
-  codigo_pedido INT PRIMARY KEY,
-  data_pedido TIMESTAMP NOT NULL,
+  codigo_pedido SERIAL PRIMARY KEY,
+  data_pedido TIMESTAMP DEFAULT NOW () NOT NULL,
   total FLOAT NOT NULL,
+  quantidade_item INT NOT NULL,
   observacao TEXT,
-  desconto FLOAT,
   finalizado BOOLEAN NOT NULL,
-  codigo_cliente VARCHAR REFERENCES cliente(cpf)
+  codigo_cliente VARCHAR REFERENCES cliente(cpf) NOT NULL,
+  codigo_comida INT REFERENCES comida(codigo_comida) NOT NULL
 );
 
 CREATE TABLE item_pedido (
   preco_total FLOAT,
   quantidade INT,
-  codigo_pedido  INT REFERENCES pedido(codigo_pedido),
+  codigo_pedido INT REFERENCES pedido(codigo_pedido),
   codigo_comida INT REFERENCES comida(codigo_comida),
   PRIMARY KEY (codigo_pedido),
   PRIMARY KEY (codigo_comida) 
@@ -74,3 +75,8 @@ VALUES ('Hamburguer Especial', 35.60, 'Carne bovina, bacon, queijo do reino, tom
 
 INSERT INTO comida (nome, preco, descricao, codigo_restaurante)
 VALUES ('Pizza de doritos', 25.90, 'Doritos, queijo mussarela, molho de tomate', '33.014.556/0001-99');
+
+-- Pesquisa de comida -- 
+SELECT comida.nome, comida.preco, restaurante.nome FROM comida 
+INNER JOIN restaurante ON comida.codigo_restaurante=restaurante.cnpj
+WHERE comida.nome ILIKE 'ham%'
