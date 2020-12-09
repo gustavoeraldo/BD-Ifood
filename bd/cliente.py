@@ -7,7 +7,7 @@ from db import db
 restaurante:
 [x] Bustar comida 
 [ ] Buscar restaurante 
-[ ] Histórico de pedidos
+[x] Histórico de pedidos
 [ ] Alterar perfil
 '''
 
@@ -26,11 +26,7 @@ class Cliente():
   def Buscar_Comida(self):
     conn = db.Init_db()
     cur = conn.cursor()
-    '''
-    [x] Continuar buscando comida
-    [/] Selecionar uma comida e fazer o pedido
-    [x] Cancela operação e volta para o Menu
-    '''
+
     loop = True
 
     while loop:
@@ -117,8 +113,34 @@ class Cliente():
         return f'{err}'
     elif confirmacao.lower() == 'n':
       print('\n\033[31m Pedido Cancelado!\033[37m\n')
-      return
-    
+      return True
+     
     print('\n \033[32mPedido concluído com sucesso !\033[37m \n')
+    db.Close_db(cur, conn)
+    return True
 
+  def Visualizar_Historico(self):
+    conn = db.Init_db()
+    cur = conn.cursor()
+    
+    try:
+      cur.execute(f"""SELECT pedido.data_pedido, pedido.total, pedido.quantidade_item, comida.nome FROM pedido
+      INNER JOIN comida ON pedido.codigo_comida=comida.codigo_comida WHERE pedido.codigo_cliente='{self.cpf}'""")
+
+      historico = cur.fetchall()
+    except OSError as err:
+      print(err)
+      return
+
+    if historico:
+      print("""\t\t\n********* HISTÓRICO DE PEDIDOS *********\n
+      Data \t\t\t Comida \t\t Quantidade \t Total(R$)\n""")
+
+      for item in historico:
+        data, total, quantidade, comida = item
+        print(f"* {data} \t \033[32m{comida}\033[37m \t {quantidade} \t\t R$\033[33m{total}\033[37m")
+    else: 
+      print('Nenhum pedido realizado\n')
+
+    db.Close_db(cur, conn)
     return True

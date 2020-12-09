@@ -86,7 +86,7 @@ def Menu(tipo_usuario, info_usuario):
       opcao = input('\033[36m[ 1 ] - Atualizar perfil\n'
             '[ 2 ] - Buscar comida\n'
             '[ 3 ] - Buscar restaurante\n'
-            '[ 4 ] - Susgestão do app\n'
+            '[ 4 ] - Visualizar todos os pedidos\n'
             '[ 5 ] - \033[31m Logout \033[37m\n')
       
       if opcao == '1':
@@ -96,7 +96,7 @@ def Menu(tipo_usuario, info_usuario):
       elif opcao == '3':
         loop = cliente.Buscar_Restaurante()
       elif opcao == '4':
-        loop = 'Sugestão do app (Ainda em desenvolvimento)'
+        loop = cliente.Visualizar_Historico()
       elif opcao == '5':
         loop = False
 
