@@ -139,10 +139,10 @@ class Restaurante:
     db.Close_db(cur, conn)
     return True
 
-  def Obter_relatorio(self):
+  def Obter_relatorio(self):# Apresenta um menu com os tipos de relatório
     '''
     [x] comidas mais vendidas
-    [ ] extrato do mais recente ao mais antigo
+    [x] extrato do mais recente ao mais antigo
     [ ] preço médio da comida vendida nos últimos 7 dias
     '''
     loop = True
@@ -194,4 +194,26 @@ class Restaurante:
     return True
   
   def Historico_Vendas(self):# Retorna extratos do mais recente ao mais antigo
+    conn = db.Init_db()
+    cur = conn.cursor()
+
+    cur.execute(f"""SELECT comida.nome, pedido.quantidade_item, pedido.data_pedido FROM comida 
+    INNER JOIN pedido ON comida.codigo_comida=pedido.codigo_comida 
+    WHERE comida.codigo_restaurante='{self.cnpj}' 
+    ORDER BY pedido.data_pedido DESC;""")
+    
+    relatorio = cur.fetchall()
+    if relatorio:
+      print(f"""
+      *******************\033[36m Relatório: Todas as vendas \033[37m *******************
+      Comida\t\t\t \033[32m Quantidade\033[37m \t Data
+      """)
+
+      for item in relatorio:
+        comida, quantidade, data = item
+        print(f"\t{comida} \t \033[32m{quantidade}\033[37m \t {data}")
+    else:
+      print("\t\033[33m Não há nenhum cadastro de vendas! \033[37m\n")
+
+    db.Close_db(cur, conn)
     return True
