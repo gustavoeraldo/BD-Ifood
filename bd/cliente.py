@@ -1,4 +1,3 @@
-# import psycopg2
 import sys
 
 from db import db
@@ -6,7 +5,7 @@ from db import db
 '''
 restaurante:
 [x] Bustar comida 
-[ ] Buscar restaurante 
+[x] Buscar restaurante 
 [x] Histórico de pedidos
 [ ] Alterar perfil
 '''
@@ -15,7 +14,7 @@ class Cliente():
   def __init__(self, cpf, nome, email, senha, telefone1, telefone2):
     self.cpf = cpf
     self.nome = nome
-    self.email =email
+    self.email = email
     self.senha = senha
     self.telefone1 = telefone1
     self.telefone2 = telefone2
@@ -46,9 +45,11 @@ class Cliente():
             nome, preco, _, restaurante = item
             print(f"\033[32m\t{nome}\033[37m \t R$ \033[33m {preco}\033[37m \t{restaurante} \n")
 
-      opcao = input("""[ 1 ] - Continuar buscando comida
-              [ 2 ] - Selecionar uma comida e fazer o pedido
-              [ 3 ] - Voltar para o Menu\n""")
+      opcao = input("""
+        [ 1 ] - Continuar buscando comida
+        [ 2 ] - Selecionar uma comida e fazer o pedido
+        [ 3 ] - Voltar para o Menu
+        -> """)
 
       if opcao == '1':
           pass
@@ -63,22 +64,78 @@ class Cliente():
 
     return 'lista de comidas'
 
-  def Buscar_Restaurante(self):
-    return 'buscar restaurante'
+  def Buscar_Restaurante(self):#Ajustar
+    conn = db.Init_db()
+    cur = conn.cursor()
+
+    resultado=[]
+    loop = True
+
+    while loop:
+      restaurante = input('\tDigite o restaurante que está procurando: ')
+
+      if restaurante:
+        cur.execute(f"SELECT nome, cnpj FROM restaurante WHERE nome ILIKE '{restaurante}%';")
+        resultado = cur.fetchall()
+
+        if resultado:
+          self.Resultado_Pesquisa(resultado)
+
+      opcao = input("""
+        [ 1 ] - Buscar por restaurantes
+        [ 2 ] - Ver todos os restaurantes
+        [ 3 ] - Selecione o restaurante e visualize o cardápio
+        [ 4 ] - Voltar para o Menu
+        -> """)
+
+      if opcao == '1':# Buscar por mais restaurantes
+        pass
+
+      elif opcao == '2':
+        cur.execute('SELECT nome, cnpj FROM restaurante;')
+        resultado = cur.fetchall()
+        loop = self.Resultado_Pesquisa(resultado)
+
+      elif opcao == '3':
+        indice = input('\tDigite o número do restaurante desejado: ')
+        nome_restaurante, cnpj = resultado[int(indice)]
+
+        cur.execute(f"""SELECT nome, preco, descricao FROM comida WHERE codigo_restaurante='{cnpj}';""")
+        cardapio = cur.fetchall()
+
+        print(f"""\t\t{'**'*12}*
+        \t*\t \033[36m Cardápio \033[37m \t*
+        \t{'**'*12}*\n""")
+
+        print("\t Comida \t\t Peço")
+        for comida in cardapio:
+          nome, preco, descricao = comida
+          print(f"\033[32m\t{nome}\033[37m \t R$ \033[33m {preco} \033[37m\n"
+                f"\tContem: {descricao}"
+          )
+
+      elif opcao == '4':
+        loop = False
+      else: 
+        pass
+
+    db.Close_db(cur, conn)
+
+    return True
 
   def Cadastrar(self):
     conn = db.Init_db()
     cur = conn.cursor()
 
     try:
-      cur.execute(f"INSERT INTO cliente VALUES ({cpf, nome, email, senha, telefone1});")
+      cur.execute(f"INSERT INTO cliente VALUES ('{self.cpf}', '{self.nome}', '{self.email}', '{self.senha}', '{self.telefone1}', '{self.telefone2}');")
       conn.commit()
     except OSError as err:
       return f'Erro na criação do restaurante. {err}' 
     
     print('Usuário cadastrado com sucesso!')
 
-    db.Close(cur, conn)
+    db.Close_db(cur, conn)
     return True
 
   def Fazer_Pedido(self, cur, conn, lista_comida):
@@ -133,14 +190,28 @@ class Cliente():
       return
 
     if historico:
-      print("""\t\t\n********* HISTÓRICO DE PEDIDOS *********\n
-      Data \t\t\t Comida \t\t Quantidade \t Total(R$)\n""")
+      print("""
+        \033[33m******************* HISTÓRICO DE PEDIDOS *******************\033[37m
+        Data \t\t\t Comida \t Quantidade \t Total(R$)
+        """)
 
       for item in historico:
         data, total, quantidade, comida = item
-        print(f"* {data} \t \033[32m{comida}\033[37m \t {quantidade} \t\t R$\033[33m{total}\033[37m")
+        print(f"* {data} \t \033[32m{comida}\033[37m \t {quantidade} \t R$\033[33m{total}\033[37m")
     else: 
-      print('Nenhum pedido realizado\n')
+      print('\t Nenhum pedido realizado\n')
 
     db.Close_db(cur, conn)
+    return True
+
+  def Resultado_Pesquisa(self, resultado):
+
+    print("\n\t Restaurantes\n")
+
+    i = 0     
+    for item in resultado:
+      restaurante, _ = item
+      print(f"\t \033[32m[{i}]\033[37m {restaurante}\n")
+      i = i+1
+
     return True

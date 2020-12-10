@@ -70,6 +70,9 @@ CREATE TABLE categoria (
 INSERT INTO restaurante (cnpj, nome, email, senha, entrega, aberto) 
 VALUES ('33014556000199', 'Pizzaria do Paulista', 'paulista@gmail.com', '123456', 0.0, 'true');
 
+INSERT INTO restaurante(cnpj, email, senha, nome, entrega, aberto) 
+VALUES ('33.014.556/0001-96', 'rest@gmail.com', 123, 'Insano', 0.0, 'True')
+
 INSERT INTO comida (nome, preco, descricao, codigo_restaurante)
 VALUES ('Hamburguer Especial', 35.60, 'Carne bovina, bacon, queijo do reino, tomate e cebola', '33.014.556/0001-99');
 

@@ -28,13 +28,14 @@ class Restaurante:
     cur = conn.cursor()
 
     try:
-      cur.execute(f'INSERT INTO restaurante VALUES '
-        f'({self.cnpj, self.email, self.senha, self.nome, self.entrega, self.aberto});')
+      cur.execute(f"""INSERT INTO restaurante VALUES
+      ('{self.cnpj}', '{self.email}', '{self.senha}', '{self.nome}', {self.entrega}, '{self.aberto}');""")
       conn.commit()
     except OSError as err:
-      return f'Erro na criação do restaurante. {err}' 
+      return f'Erro no cadastro do restaurante. {err}' 
     
-    db.Close(cur, conn)
+    db.Close_db(cur, conn)
+    return True
 
   def Atualizar_Cardapio(self):
 
@@ -118,28 +119,28 @@ class Restaurante:
     conn = db.Init_db()
     cur = conn.cursor()
 
-    try:
-      cur.execute(f"SELECT * FROM comida WHERE codigo_restaurante='{self.cnpj}'" )
-      cardapio = cur.fetchall()
-    except OSError as err:
-      print(err)
-      return f'{err}'
+    cur.execute(f"SELECT * FROM comida WHERE codigo_restaurante='{self.cnpj}';" )
+    cardapio = cur.fetchall()
     
-    print(f"{'**'*12}*\n"
-      f"*\t \033[36m Cardápio \033[37m \t*\n*"
-      f"{'**'*12}*\n")
+    if cardapio:
+      print(f"""
+      *******************\033[36m CARDÁPIO \033[37m *******************
+      """)
 
-    print("\t Comida \t\t Peço")
-    for comida in cardapio:
-      _, nome, preco, descricao, _ = comida
+      print("\t Comida \t\t Peço")
+      for comida in cardapio:
+        _, nome, preco, descricao, _ = comida
 
-      print(f"\033[32m\t{nome}\033[37m \t R$ \033[33m {preco} \033[37m\n"
-            f"Contem: {descricao}"
-      )
-
-    print("\n")
+        print(f"""
+        \033[32m{nome}\033[37m \t R$ \033[33m {preco} \033[37m
+        Contem: {descricao}
+        """)
+    else:
+      print('\033[33m\t Nenhuma comida foi adicionada no seu cardápio !!\033[37m')
+  
     db.Close_db(cur, conn)
     return True
 
   def Obter_relatorio(self):
-    return 'relatório do mês'
+    print('Relatório do mês')
+    return True
