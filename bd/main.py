@@ -8,17 +8,17 @@ from db import db
 def Pesquisa_Usuario(tabela, email, senha):#Identifica o tipo do usuário e retorna seus dados
   conn = db.Init_db()
   cur = conn.cursor()
- 
-  try:
-    cur.execute(f"SELECT * FROM {tabela} WHERE email='{email}' AND senha='{senha}';")
-    user = cur.fetchone()
-    # print(user)
-    print('\t\nLogin efetuado\n')
 
+  cur.execute(f"SELECT * FROM {tabela} WHERE email='{email}' AND senha='{senha}';")
+  user = cur.fetchone()
+  db.Close_db(cur, conn)
+
+  if user:
     Menu(tabela, user)
-    db.Close_db(cur, conn)
-  except OSError as err:
-    print(f'Usuário não existe, realize um cadastro!\n erro:{err} ')
+  else:
+    print('\033[31m\tUsuário não existe ou os dados estão incorretos!\033[37m\n')
+  return
+  
   
   return  
 
@@ -82,6 +82,7 @@ def Cadastro():# Cria Cliente ou restaurante
     return 'Redireciona para o dashboard'
 
 def Menu(tipo_usuario, info_usuario):
+  print('\t\nLogin efetuado\n')
   loop = True
 
   while loop:
@@ -120,7 +121,7 @@ def Menu(tipo_usuario, info_usuario):
       opcao = input("""
       \033[36m[ 1 ]\033[37m - Atualizar cardápio
       \033[36m[ 2 ]\033[37m - Visualizar cardápio
-      \033[36m[ 3 ]\033[37m - Obter relatório mensal
+      \033[36m[ 3 ]\033[37m - Obter relatório de vendas
       \033[36m[ 4 ] -\033[31m Logout \033[37m
       -> """)
       

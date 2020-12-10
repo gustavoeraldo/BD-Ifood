@@ -1,4 +1,3 @@
-import psycopg2
 import sys
 import random
 
@@ -7,7 +6,7 @@ from db import db
 '''
 restaurante:
 [x] crud de comida
-[ ] relatório
+[/] relatório
   - comidas mais vendidas
   - extrato do mais recente ao mais antigo
   - preço médio da comida vendida nos últimos 7 dias
@@ -22,7 +21,6 @@ class Restaurante:
     self.entrega = entrega
     self.aberto = aberto
   
-
   def Cadastrar(self):
     conn = db.Init_db()
     cur = conn.cursor()
@@ -142,5 +140,58 @@ class Restaurante:
     return True
 
   def Obter_relatorio(self):
-    print('Relatório do mês')
+    '''
+    [x] comidas mais vendidas
+    [ ] extrato do mais recente ao mais antigo
+    [ ] preço médio da comida vendida nos últimos 7 dias
+    '''
+    loop = True
+
+    while loop:
+      opcao = input("""
+      \033[36m[ 1 ]\033[37m - Obter relatório das comidas mais vendidas
+      \033[36m[ 2 ]\033[37m - Obter relatório de todas as vendas
+      \033[36m[ 3 ]\033[37m - Preço médio da comida vendida nos últimos 7 dias
+      \033[36m[ 4 ]\033[37m - Voltar para o Menu
+      -> """)
+
+      if opcao == '1':
+        loop = self.Comida_Mais_Vendidas()
+      elif opcao == '2':
+        loop = self.Historico_Vendas()
+      elif opcao == '3':
+        pass
+      elif opcao == '4':
+          loop = False
+
+    return True
+
+  def Comida_Mais_Vendidas(self):
+    conn = db.Init_db()
+    cur = conn.cursor()
+
+    cur.execute(f"""SELECT comida.nome, pedido.quantidade_item FROM comida 
+    INNER JOIN pedido ON comida.codigo_comida=pedido.codigo_comida 
+    WHERE comida.codigo_restaurante='{self.cnpj}' 
+    ORDER BY pedido.quantidade_item DESC;""")
+    
+    relatorio = cur.fetchall()
+    if relatorio:
+      print(f"""
+      *******************\033[36m Relatório: Comida mais vendida \033[37m *******************""")
+
+      comida, quantidade = relatorio[0]
+      print(f"""
+      Comida \t\t\t Quantidade
+      {comida} \t {quantidade}
+      """)
+    else:
+      print(f"""
+      \033[33m Não há nenhum cadastro de vendas! \033[37m
+      """)
+
+    db.Close_db(cur, conn)
+    return True
+  
+  def Historico_Vendas(self):# Retorna extratos do mais recente ao mais antigo
     return True
