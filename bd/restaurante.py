@@ -3,13 +3,6 @@ import random
 
 from db import db
 
-'''
-restaurante:
-[x] crud de comida
-[/] relatório
-  - preço médio da comida vendida nos últimos 7 dias
-'''
-
 class Restaurante:
   def __init__(self, cnpj, email, senha, nome, entrega, aberto ):
     self.cnpj = cnpj
@@ -27,9 +20,10 @@ class Restaurante:
       cur.execute(f"""INSERT INTO restaurante VALUES
       ('{self.cnpj}', '{self.email}', '{self.senha}', '{self.nome}', {self.entrega}, '{self.aberto}');""")
       conn.commit()
-    except OSError as err:
-      return f'Erro no cadastro do restaurante. {err}' 
+    except Exception as err:
+      raise Exception (f'Erro no cadastro do restaurante. {err}') 
     
+    print('Restaurante cadastrado com sucesso!')
     db.Close_db(cur, conn)
     return True
 
@@ -144,6 +138,9 @@ class Restaurante:
     loop = True
 
     while loop:
+      print("""
+      *******************\033[36m RELATÓRIOS \033[37m *******************""")
+
       opcao = input("""
       \033[36m[ 1 ]\033[37m - Obter relatório da comida mais vendida
       \033[36m[ 2 ]\033[37m - Obter relatório de todas as vendas
@@ -166,10 +163,10 @@ class Restaurante:
     conn = db.Init_db()
     cur = conn.cursor()
 
-    cur.execute(f"""SELECT comida.nome, pedido.quantidade_item FROM comida 
+    cur.execute(f"""SELECT SUM(pedido.quantidade_item) as total, comida.nome FROM comida 
     INNER JOIN pedido ON comida.codigo_comida=pedido.codigo_comida 
     WHERE comida.codigo_restaurante='{self.cnpj}' 
-    ORDER BY pedido.quantidade_item DESC;""")
+    GROUP BY comida.nome ORDER BY total DESC;""")
     
     relatorio = cur.fetchall()
     if relatorio:
@@ -217,16 +214,32 @@ class Restaurante:
   def Media_Preco_Vendas(self):# Preço médio da comida vendida nos últimos 7 dias
     conn = db.Init_db()
     cur = conn.cursor()
+    periodo = '1 months' 
 
-    cur.execute(f"""SELECT AVG(DISTINCT preco_comida)::numeric(10,2), codigo_comida 
-    FROM item_pedido INNER JOIN comida USING(codigo_comida) 
+    # Seleção do período
+    opcao = input("""
+    \033[36m[ 1 ]\033[37m - Obter relatório do último dia
+    \033[36m[ 2 ]\033[37m - Obter relatório dos últimos 7 dias
+    \033[36m[ 3 ]\033[37m - Obter relatório do mês
+    -> """)
+
+    if opcao == '1':
+      periodo = '1 days'
+    elif opcao == '2':
+      periodo = '7 days'
+    else: # Por default o restaurante verá o relatório do mẽs
+      pass
+
+    cur.execute(f"""SELECT AVG(preco_comida)::numeric(10,2),
+    comida.nome FROM comida INNER JOIN item_pedido USING(codigo_comida) 
     INNER JOIN restaurante ON comida.codigo_restaurante='{self.cnpj}' 
-    GROUP BY codigo_comida;""")
+    WHERE data_pedido > current_date - interval '{periodo}'
+    GROUP BY comida.nome ;""")
     
     relatorio = cur.fetchall()
     if relatorio:
       print(f"""
-      *******************\033[36m Relatório: Média do preço das vendidas \033[37m *******************
+      *******************\033[36m Relatório: Média do preço das vendidas no mês \033[37m *******************
       Comida\t\t\t \033[32m Preço(Médio)\033[37m
       """)
 

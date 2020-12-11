@@ -96,23 +96,30 @@ def Cadastro():# Cria Cliente ou restaurante
     senha = input('Digite seu senha: ')
     
     restaurante = Restaurante(cnpj, email, senha, nome, entrega, True)
-    restaurante.Cadastrar()
+    try:
+      cadastro_req = restaurante.Cadastrar()
+    except Exception as e:
+      resposta = input('''Ocorreu erro no cadastro, revise suas informações.
+      Você deseja redirecionado para o cadastro novamente ?
+      (S/N) -> ''')
 
-    return 'é restaurante'
+    if resposta.lower() == 's':
+      Cadastro()
+    elif resposta.lower() == 'n': # Tratar essa opção
+      return
 
-  else:
-    print('Selecione uma das opções ou cancele a requisição')
-    return 'Redireciona para o dashboard'
+    if cadastro_req:# Em caso de sucesso no cadastro, redireciona para o login
+      Login()
+
+  return
+
 
 def Menu(tipo_usuario, info_usuario):
   print('\t\nLogin efetuado\n')
   loop = True
 
   while loop:
-    print(f"""
-      \033[33m{'**'*8}
-      *\t Menu do app *
-      {'**'*8}\033[37m\n""")
+    print("\033[33m **************** MENU DO APP ************** \033[37m")
 
     if tipo_usuario == 'cliente':
       cpf, nome, email, senha, telefone1, _ = info_usuario

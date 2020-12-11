@@ -65,17 +65,7 @@ CREATE TABLE categoria (
 
 -- Inserir fake dados nas tabelas --
 
-INSERT INTO restaurante (cnpj, nome, email, senha, entrega, aberto) 
-VALUES ('33.014.556/0001-99', 'Pizzaria do Paulista', 'paulista@gmail.com', '123456', 0.0, 'true');
 
-INSERT INTO restaurante(cnpj, email, senha, nome, entrega, aberto) 
-VALUES ('33.014.556/0001-96', 'rest@gmail.com', 123, 'Insano', 0.0, 'True')
-
-INSERT INTO comida (nome, preco, descricao, codigo_restaurante)
-VALUES ('Hamburguer Especial', 35.60, 'Carne bovina, bacon, queijo do reino, tomate e cebola', '33.014.556/0001-99');
-
-INSERT INTO comida (nome, preco, descricao, codigo_restaurante)
-VALUES ('Pizza de doritos', 25.90, 'Doritos, queijo mussarela, molho de tomate', '33.014.556/0001-99');
 
 -- Pesquisa de comida -- 
 SELECT comida.nome, comida.preco, restaurante.nome FROM comida 
