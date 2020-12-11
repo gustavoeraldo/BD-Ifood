@@ -113,7 +113,6 @@ def Cadastro():# Cria Cliente ou restaurante
 
   return
 
-
 def Menu(tipo_usuario, info_usuario):
   print('\t\nLogin efetuado\n')
   loop = True
@@ -126,22 +125,19 @@ def Menu(tipo_usuario, info_usuario):
       cliente = Cliente(cpf, nome, email, senha, telefone1, _)
 
       opcao = input("""
-      \033[36m[ 1 ]\033[37m - Atualizar perfil
-      \033[36m[ 2 ]\033[37m - Buscar comida
-      \033[36m[ 3 ]\033[37m - Buscar restaurante
-      \033[36m[ 4 ]\033[37m - Visualizar todos os pedidos
-      \033[36m[ 5 ] -\033[31m Logout \033[37m
+      \033[36m[ 1 ]\033[37m - Buscar comida
+      \033[36m[ 2 ]\033[37m - Buscar restaurante
+      \033[36m[ 3 ]\033[37m - Visualizar todos os pedidos
+      \033[36m[ 4 ] -\033[31m Logout \033[37m
       -> """)
       
       if opcao == '1':
-        loop = cliente.Alterar_Perfil()
-      elif opcao == '2':
         loop = cliente.Buscar_Comida()
-      elif opcao == '3':
+      elif opcao == '2':
         loop = cliente.Buscar_Restaurante()
-      elif opcao == '4':
+      elif opcao == '3':
         loop = cliente.Visualizar_Historico()
-      elif opcao == '5':
+      elif opcao == '4':
         loop = False
 
     elif tipo_usuario == 'restaurante':

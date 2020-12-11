@@ -28,7 +28,6 @@ class Restaurante:
     return True
 
   def Atualizar_Cardapio(self):
-
     loop = True
 
     while loop:
@@ -45,8 +44,6 @@ class Restaurante:
         loop = self.Deletar_Comida()
       elif opcao == '4':
           loop = False
-      
-      print(loop)
 
     return True
 
@@ -63,13 +60,14 @@ class Restaurante:
       cur.execute(f"""INSERT INTO comida(nome, preco, descricao, codigo_restaurante) 
       VALUES ('{nome}', {float(preco)}, '{descricao}', '{self.cnpj}');""")
       conn.commit()
-    except OSError as err:
-      print(f'Erro: {err}')
-      return f'{err}'
-    
-    db.Close_db(cur, conn)
+    except Exception as err:
+      print(f'Ocorreu um erro na adição de comida.')
+      raise Exception (f'{err}')
 
-    return 'Comida adicionada com sucesso!'
+    print('\033[32m Comida adicionada com sucesso! \033[37m')
+
+    db.Close_db(cur, conn)
+    return True
     
   def Deletar_Comida(self):
     conn = db.Init_db()
@@ -81,9 +79,11 @@ class Restaurante:
     try:
       cur.execute(f"DELETE FROM comida WHERE nome='{comida}' AND codigo_restaurante='{self.cnpj}'")  
       conn.commit()
-    except OSError as err:
+    except Exception as err:
       print(err)
       return f'{err}'
+
+    print('\033[32m Comida deletada com sucesso! \033[37m')
     
     db.Close_db(cur, conn)
     return True
@@ -101,12 +101,13 @@ class Restaurante:
       cur.execute(f"""UPDATE comida SET nome='{novo_nome}', preco={round(novo_preco, 2)} 
       WHERE nome='{antiga_comida}' AND codigo_restaurante='{self.cnpj}';""")  
       conn.commit()
-    except OSError as err:
+    except Exception as err:
       print(err)
-      return f'{err}'
+      raise Exception (f'{err}')
     
+    print('\033[32m Comida Editada com sucesso! \033[37m')
     db.Close_db(cur, conn)
-    return 'retorna uma ou várias comidas'
+    return True
 
   def Visualizar_Cardapio(self):#Atualizar visualização
     conn = db.Init_db()

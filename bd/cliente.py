@@ -27,7 +27,7 @@ class Cliente():
       if comida:
         cur.execute(f"""SELECT comida.nome, comida.preco, comida.codigo_comida, restaurante.nome, 
         restaurante.entrega FROM comida INNER JOIN restaurante ON 
-        comida.codigo_restaurante=restaurante.cnpj WHERE comida.nome ILIKE '{comida}%'""")
+        comida.codigo_restaurante=restaurante.cnpj WHERE comida.nome ILIKE '%{comida}%'""")
         
         resultado = cur.fetchall()
 
@@ -58,9 +58,6 @@ class Cliente():
     return 'lista de comidas'
 
   def Buscar_Restaurante(self):#Ajustar
-    '''
-    [ ] Restaurante Popular
-    '''
     conn = db.Init_db()
     cur = conn.cursor()
 
@@ -73,53 +70,37 @@ class Cliente():
       (Apenas clique Enter para mais opções): """)
 
       if restaurante:
-        cur.execute(f"SELECT nome, cnpj FROM restaurante WHERE nome ILIKE '{restaurante}%';")
+        cur.execute(f"SELECT nome, cnpj FROM restaurante WHERE nome ILIKE '%{restaurante}%';")
         resultado = cur.fetchall()
 
         if resultado:
-          self.Resultado_Pesquisa(resultado)
+          self.Resultado_Pesquisa(resultado, 'Restaurantes encontrados')
 
       opcao = input("""
       [ 1 ] - Buscar por restaurantes
       [ 2 ] - Ver todos os restaurantes
       [ 3 ] - Ver todos os restaurantes com entrega grátis
-      [ 4 ] - Ver todos os restaurantes populares
-      [ 5 ] - Selecione o restaurante e visualize o cardápio
-      [ 6 ] - Voltar para o Menu
+      [ 4 ] - Selecione o restaurante e visualize o cardápio
+      [ 5 ] - Voltar para o Menu
       -> """)
 
       if opcao == '1':# Buscar por mais restaurantes
         pass
 
-      elif opcao == '2':
+      elif opcao == '2': # Todos os restaurantes
         cur.execute('SELECT nome, cnpj FROM restaurante;')
         resultado = cur.fetchall()
         self.Resultado_Pesquisa(resultado, 'Restaurantes')
 
-      elif opcao == '3':
+      elif opcao == '3': # Restaurantes com frete grátis
         cur.execute('SELECT nome, cnpj FROM restaurante WHERE entrega=0;')
         resultado = cur.fetchall()
         self.Resultado_Pesquisa(resultado, 'Restaurantes com Entrega grátis')
 
+      elif opcao == '4' and resultado: # Seleciona o restaurante e visualiza o cardápio
+        self.Visualizar_Cardapio(resultado)
+
       elif opcao == '5':
-        indice = input('\tDigite o número do restaurante desejado: ')
-        nome_restaurante, cnpj = resultado[int(indice)]
-
-        cur.execute(f"""SELECT nome, preco, descricao FROM comida WHERE codigo_restaurante='{cnpj}';""")
-        cardapio = cur.fetchall()
-
-        print(f"""\t\t{'**'*12}*
-        \t*\t \033[36m Cardápio \033[37m \t*
-        \t{'**'*12}*\n""")
-
-        print("\t Comida \t\t Peço")
-        for comida in cardapio:
-          nome, preco, descricao = comida
-          print(f"\033[32m\t{nome}\033[37m \t R$ \033[33m {preco} \033[37m\n"
-                f"\tContem: {descricao}"
-          )
-
-      elif opcao == '6':
         loop = False
       else: 
         pass
@@ -177,7 +158,7 @@ class Cliente():
         conn.commit()
 
         cur.execute(f"""INSERT INTO item_pedido (preco_comida, data_pedido, codigo_pedido, codigo_comida)
-        VALUES ({preco}, '{data}', {cod_pedido}, )""")
+        VALUES ({preco}, '{data}', {cod_pedido}, {cod_comida})""")
         conn.commit()
       except Exception as e:
         print(f'Erro na requisição do pedido. {e}')
@@ -215,6 +196,39 @@ class Cliente():
         print(f"* {data} \t \033[32m{comida}\033[37m \t {quantidade} \t R$\033[33m {total}\033[37m")
     else: 
       print('\t Nenhum pedido realizado\n')
+
+    db.Close_db(cur, conn)
+    return True
+
+  def Visualizar_Cardapio(self, resultado):
+    conn = db.Init_db()
+    cur = conn.cursor()
+
+    indice = input('\tDigite o número do restaurante desejado: ')
+    nome_restaurante, cnpj = '', ''
+
+    try:
+      nome_restaurante, cnpj = resultado[int(indice)]
+    except Exception as err:
+      print('\033[33m Seleção inválida! Serás redirecionado para o menu de pesquisa de restaurantes\033[37m\n')
+      return True
+    
+    cur.execute(f"""SELECT nome, preco, descricao FROM comida WHERE codigo_restaurante='{cnpj}';""")
+    cardapio = cur.fetchall()
+
+    if cardapio:
+      print("""
+      ****************\033[36m Cardápio \033[37m ****************
+      Comida \t\t Peço
+      """)
+
+      for comida in cardapio:
+        nome, preco, descricao = comida
+        print(f"\033[32m\t{nome}\033[37m \t R$ \033[33m {preco} \033[37m\n"
+              f"\tContem: {descricao}"
+        )
+    else :
+      print('\033[33m Nenhuma comida foi registrada no cardápio do restaurante !\033[37m')
 
     db.Close_db(cur, conn)
     return True
