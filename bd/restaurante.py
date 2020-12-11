@@ -7,8 +7,6 @@ from db import db
 restaurante:
 [x] crud de comida
 [/] relatório
-  - comidas mais vendidas
-  - extrato do mais recente ao mais antigo
   - preço médio da comida vendida nos últimos 7 dias
 '''
 
@@ -43,7 +41,7 @@ class Restaurante:
       opcao = input('[ 1 ] - Adicionar comida\n'
               '[ 2 ] - Editar comida\n'
               '[ 3 ] - Deletar comida\n'
-              '[ 4 ] - Cancelar operação\n')
+              '[ 4 ] - Voltar para o menu\n')
 
       if opcao == '1':
           loop = self.Adicionar_Comida()
@@ -68,7 +66,8 @@ class Restaurante:
     descricao = input('Digite o descrição da comida (máximo de 100 caracteres):\n')  
 
     try:
-      cur.execute(f"INSERT INTO comida VALUES {random.randrange(6, 10**5), nome, float(preco), descricao, self.cnpj};")
+      cur.execute(f"""INSERT INTO comida(nome, preco, descricao, codigo_restaurante) 
+      VALUES ('{nome}', {float(preco)}, '{descricao}', '{self.cnpj}');""")
       conn.commit()
     except OSError as err:
       print(f'Erro: {err}')
@@ -83,7 +82,7 @@ class Restaurante:
     cur = conn.cursor()
 
     self.Visualizar_Cardapio()
-    comida = input('Digite a comida que deseja deletar:\n')
+    comida = input('Digite o nome da comida que deseja deletar:\n')
    
     try:
       cur.execute(f"DELETE FROM comida WHERE nome='{comida}' AND codigo_restaurante='{self.cnpj}'")  
@@ -100,11 +99,13 @@ class Restaurante:
     cur = conn.cursor()
 
     self.Visualizar_Cardapio()
-    antiga_comida = input('Digite o nome da comida que deseja alterar:\n')
-    novo_nome = input('Digite o novo nome da comida:\n')
+    antiga_comida = input('Digite o nome da comida que deseja alterar: \n')
+    novo_nome = input('Digite o novo nome da comida: \n')
+    novo_preco = float(input('Digite o novo preço da comida: \n'))
 
     try:
-      cur.execute(f"UPDATE comida SET nome='{novo_nome}' WHERE nome='{antiga_comida}' AND codigo_restaurante='{self.cnpj}'")  
+      cur.execute(f"""UPDATE comida SET nome='{novo_nome}', preco={round(novo_preco, 2)} 
+      WHERE nome='{antiga_comida}' AND codigo_restaurante='{self.cnpj}';""")  
       conn.commit()
     except OSError as err:
       print(err)
@@ -140,18 +141,13 @@ class Restaurante:
     return True
 
   def Obter_relatorio(self):# Apresenta um menu com os tipos de relatório
-    '''
-    [x] comidas mais vendidas
-    [x] extrato do mais recente ao mais antigo
-    [ ] preço médio da comida vendida nos últimos 7 dias
-    '''
     loop = True
 
     while loop:
       opcao = input("""
-      \033[36m[ 1 ]\033[37m - Obter relatório das comidas mais vendidas
+      \033[36m[ 1 ]\033[37m - Obter relatório da comida mais vendida
       \033[36m[ 2 ]\033[37m - Obter relatório de todas as vendas
-      \033[36m[ 3 ]\033[37m - Preço médio da comida vendida nos últimos 7 dias
+      \033[36m[ 3 ]\033[37m - Preço médio das comidas vendidas
       \033[36m[ 4 ]\033[37m - Voltar para o Menu
       -> """)
 
@@ -160,9 +156,9 @@ class Restaurante:
       elif opcao == '2':
         loop = self.Historico_Vendas()
       elif opcao == '3':
-        pass
+        loop = self.Media_Preco_Vendas()
       elif opcao == '4':
-          loop = False
+        loop = False
 
     return True
 
@@ -212,6 +208,31 @@ class Restaurante:
       for item in relatorio:
         comida, quantidade, data = item
         print(f"\t{comida} \t \033[32m{quantidade}\033[37m \t {data}")
+    else:
+      print("\t\033[33m Não há nenhum cadastro de vendas! \033[37m\n")
+
+    db.Close_db(cur, conn)
+    return True
+
+  def Media_Preco_Vendas(self):# Preço médio da comida vendida nos últimos 7 dias
+    conn = db.Init_db()
+    cur = conn.cursor()
+
+    cur.execute(f"""SELECT AVG(DISTINCT preco_comida)::numeric(10,2), codigo_comida 
+    FROM item_pedido INNER JOIN comida USING(codigo_comida) 
+    INNER JOIN restaurante ON comida.codigo_restaurante='{self.cnpj}' 
+    GROUP BY codigo_comida;""")
+    
+    relatorio = cur.fetchall()
+    if relatorio:
+      print(f"""
+      *******************\033[36m Relatório: Média do preço das vendidas \033[37m *******************
+      Comida\t\t\t \033[32m Preço(Médio)\033[37m
+      """)
+
+      for item in relatorio:
+        media_preco, cod_comida = item
+        print(f"\t{cod_comida} \t \033[32m{media_preco}\033[37m")
     else:
       print("\t\033[33m Não há nenhum cadastro de vendas! \033[37m\n")
 

@@ -1,4 +1,3 @@
-import psycopg2
 import sys
 
 from cliente import Cliente
@@ -8,6 +7,7 @@ from db import db
 def Pesquisa_Usuario(tabela, email, senha):#Identifica o tipo do usuário e retorna seus dados
   conn = db.Init_db()
   cur = conn.cursor()
+  resposta = ''
 
   cur.execute(f"SELECT * FROM {tabela} WHERE email='{email}' AND senha='{senha}';")
   user = cur.fetchone()
@@ -16,10 +16,17 @@ def Pesquisa_Usuario(tabela, email, senha):#Identifica o tipo do usuário e reto
   if user:
     Menu(tabela, user)
   else:
-    print('\033[31m\tUsuário não existe ou os dados estão incorretos!\033[37m\n')
-  return
+    resposta = input(f"""\033[31m 
+    Usuário não existe ou os dados estão incorretos!\033[37m
+    Você deseja redirecionado para o Login novamente ?
+    (S/N) -> """)
   
-  
+  if resposta.lower() == 's':
+    Login()
+  elif resposta.lower() == 'n': # Tratar essa opção
+    print('Você saiu do app, Volte sempre!')
+    return
+
   return  
 
 def Login():
@@ -27,8 +34,10 @@ def Login():
   cur = conn.cursor()
   print('\n\033[32m\t ************* Faça o Login no sistema *************\033[37m\n')
 
-  tipo_usuario = input('Selecione o tipo de usuário \n'
-  '(Digite 1 para pessoa física, 2 para pessoa jurídica ): ')
+  tipo_usuario = input("""Selecione o tipo de usuário:
+  [ 1 ] - Login de cliente 
+  [ 2 ] - Login Restaurante
+  -> """)
 
   if tipo_usuario == '1': 
     email = input('\nDigite seu email: ')
@@ -44,10 +53,14 @@ def Login():
 
 def Cadastro():# Cria Cliente ou restaurante
   print('\n\033[32m\t ************* Cadastro no sistema *************\033[37m\n')
-  
+  resposta = ''
+  cadastro_req = []
+
   tipo_usuario = input ('''
-  Você é um cliente ou dono de restaurante ?
-  (Digite 1 para cliente ou 2 para restaurante): ''')
+  Selecione o tipo do usuário: 
+  [ 1 ] - cliente
+  [ 2 ] - restaurante
+  -> ''')
 
   if tipo_usuario == '1':
     cpf = input('\nDigite seu cpf: ')
@@ -55,10 +68,20 @@ def Cadastro():# Cria Cliente ou restaurante
     email = input('Digite seu email: ')
     senha = input('Digite seu senha: ')
     telefone1 = input('Digite telefone principal: ')
-    telefone2 = input('Digite telefone secundário: ')
+    telefone2 = input('Digite telefone secundário (opcional): ')
 
     cliente = Cliente(cpf, nome, email, senha, telefone1, telefone2)
-    cadastro_req = cliente.Cadastrar()# Efetua o cadastro
+    try:
+      cadastro_req = cliente.Cadastrar()# Efetua o cadastro
+    except Exception as e:#e.__class__
+      resposta = input('''Ocorreu erro no cadastro, revise suas informações.
+      Você deseja redirecionado para o cadastro novamente ?
+      (S/N) -> ''')
+    
+    if resposta.lower() == 's':
+      Cadastro()
+    elif resposta.lower() == 'n': # Tratar essa opção
+      return
 
     if cadastro_req:# Em caso de sucesso no cadastro, redireciona para o login
       Login()
@@ -140,15 +163,19 @@ def Menu(tipo_usuario, info_usuario):
   return 
 
 
-print('Bem vindo ao NewiFood!')
-
 if __name__ == '__main__':
+  print('Bem vindo ao NewiFood!')
 
   entrada = input('''
-    Deseja fazer login ? (Digite \033[32m's' para sim\033[37m.
-    Caso\033[33m não tenha login digite 'n'\033[37m\033[36m e realize um cadastro\033[37m: )''')
+  Deseja fazer login ? 
+  \033[36m[ 1 ]\033[37m - Realizar Login
+  \033[36m[ 2 ]\033[37m - Realizar Cadastro
+  \033[36m[ 3 ]\033[37m - Sair do app
+  ''')
 
-  if entrada.lower() == 's':
+  if entrada == '1':
     Login()
-  elif entrada.lower() == 'n' :
+  elif entrada == '2' :
     Cadastro()
+  elif entrada == '3':
+    print('Volte sempre!')

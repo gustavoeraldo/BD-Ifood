@@ -2,14 +2,6 @@ import sys
 
 from db import db
 
-'''
-restaurante:
-[x] Bustar comida 
-[x] Buscar restaurante 
-[x] Histórico de pedidos
-[ ] Alterar perfil
-'''
-
 class Cliente():
   def __init__(self, cpf, nome, email, senha, telefone1, telefone2):
     self.cpf = cpf
@@ -18,9 +10,6 @@ class Cliente():
     self.senha = senha
     self.telefone1 = telefone1
     self.telefone2 = telefone2
-
-  def Alterar_Perfil(self):
-    return 'Perfil alterado com sucesso'
 
   def Buscar_Comida(self):
     conn = db.Init_db()
@@ -131,7 +120,7 @@ class Cliente():
       cur.execute(f"INSERT INTO cliente VALUES ('{self.cpf}', '{self.nome}', '{self.email}', '{self.senha}', '{self.telefone1}', '{self.telefone2}');")
       conn.commit()
     except OSError as err:
-      return f'Erro na criação do restaurante. {err}' 
+      raise Exception (f"{err}")
     
     print('Usuário cadastrado com sucesso!')
 
@@ -205,7 +194,6 @@ class Cliente():
     return True
 
   def Resultado_Pesquisa(self, resultado):
-
     print("\n\t Restaurantes\n")
 
     i = 0     

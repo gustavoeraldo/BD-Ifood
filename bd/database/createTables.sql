@@ -31,12 +31,10 @@ CREATE TABLE pedido (
 );
 
 CREATE TABLE item_pedido (
-  preco_total FLOAT,
-  quantidade INT,
-  codigo_pedido INT REFERENCES pedido(codigo_pedido),
-  codigo_comida INT REFERENCES comida(codigo_comida),
-  PRIMARY KEY (codigo_pedido),
-  PRIMARY KEY (codigo_comida) 
+  preco_comida FLOAT NOT NULL,
+  data_pedido TIMESTAMP DEFAULT NOW () NOT NULL,
+  codigo_pedido INT REFERENCES pedido(codigo_pedido) NOT NULL,
+  codigo_comida INT REFERENCES comida(codigo_comida) NOT NULL
 );
 
 CREATE TABLE comida (
@@ -68,7 +66,7 @@ CREATE TABLE categoria (
 -- Inserir fake dados nas tabelas --
 
 INSERT INTO restaurante (cnpj, nome, email, senha, entrega, aberto) 
-VALUES ('33014556000199', 'Pizzaria do Paulista', 'paulista@gmail.com', '123456', 0.0, 'true');
+VALUES ('33.014.556/0001-99', 'Pizzaria do Paulista', 'paulista@gmail.com', '123456', 0.0, 'true');
 
 INSERT INTO restaurante(cnpj, email, senha, nome, entrega, aberto) 
 VALUES ('33.014.556/0001-96', 'rest@gmail.com', 123, 'Insano', 0.0, 'True')
@@ -83,3 +81,13 @@ VALUES ('Pizza de doritos', 25.90, 'Doritos, queijo mussarela, molho de tomate',
 SELECT comida.nome, comida.preco, restaurante.nome FROM comida 
 INNER JOIN restaurante ON comida.codigo_restaurante=restaurante.cnpj
 WHERE comida.nome ILIKE 'ham%'
+
+SELECT AVG(DISTINCT preco_comida)::numeric(10,2) FROM item_pedido 
+INNER JOIN comida USING(codigo_comida) 
+INNER JOIN restaurante ON comida.codigo_restaurante='33.014.556/0001-99' 
+GROUP BY codigo_comida
+
+SELECT AVG(DISTINCT preco_comida)::numeric(10,2),codigo_comida 
+FROM item_pedido INNER JOIN comida USING(codigo_comida) 
+INNER JOIN restaurante ON comida.codigo_restaurante='33.014.556/3124-11' 
+GROUP BY codigo_comida
