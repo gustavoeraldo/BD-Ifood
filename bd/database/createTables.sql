@@ -6,16 +6,9 @@ CREATE TABLE cliente (
   nome VARCHAR NOT NULL,
   email VARCHAR NOT NULL,
   senha VARCHAR NOT NULL,
-  telefone1 VARCHAR,
-  telefone2 VARCHAR
-);
-
-CREATE TABLE endereco (
-  codigo_endereco INT PRIMARY KEY,
-  rua VARCHAR NOT NULL,
-  bairro VARCHAR NOT NULL,
-  numero INT NOT NULL,
-  codigo_cliente VARCHAR REFERENCES cliente(cpf)
+  telefone1 VARCHAR NOT NULL,
+  telefone2 VARCHAR,
+  endereco VARCHAR NOT NULL
 );
 
 -- Pedidos --
@@ -52,7 +45,8 @@ CREATE TABLE restaurante (
   nome VARCHAR(30) NOT NULL,
   email VARCHAR(30) NOT NULL,
   senha VARCHAR(30) NOT NULL,
-  entrega FLOAT,
+  entrega FLOAT NOT NULL,
+  endereco VARCHAR NOT NULL,
   aberto BOOLEAN NOT NULL
 );
 
@@ -68,16 +62,16 @@ CREATE TABLE categoria (
 
 
 -- Pesquisa de comida -- 
-SELECT comida.nome, comida.preco, restaurante.nome FROM comida 
-INNER JOIN restaurante ON comida.codigo_restaurante=restaurante.cnpj
-WHERE comida.nome ILIKE 'ham%'
+-- SELECT comida.nome, comida.preco, restaurante.nome FROM comida 
+-- INNER JOIN restaurante ON comida.codigo_restaurante=restaurante.cnpj
+-- WHERE comida.nome ILIKE 'ham%'
 
-SELECT AVG(DISTINCT preco_comida)::numeric(10,2) FROM item_pedido 
-INNER JOIN comida USING(codigo_comida) 
-INNER JOIN restaurante ON comida.codigo_restaurante='33.014.556/0001-99' 
-GROUP BY codigo_comida
+-- SELECT AVG(DISTINCT preco_comida)::numeric(10,2) FROM item_pedido 
+-- INNER JOIN comida USING(codigo_comida) 
+-- INNER JOIN restaurante ON comida.codigo_restaurante='33.014.556/0001-99' 
+-- GROUP BY codigo_comida
 
-SELECT AVG(DISTINCT preco_comida)::numeric(10,2),codigo_comida 
-FROM item_pedido INNER JOIN comida USING(codigo_comida) 
-INNER JOIN restaurante ON comida.codigo_restaurante='33.014.556/3124-11' 
-GROUP BY codigo_comida
+-- SELECT AVG(DISTINCT preco_comida)::numeric(10,2),codigo_comida 
+-- FROM item_pedido INNER JOIN comida USING(codigo_comida) 
+-- INNER JOIN restaurante ON comida.codigo_restaurante='33.014.556/3124-11' 
+-- GROUP BY codigo_comida

@@ -4,13 +4,14 @@ import datetime
 from db import db
 
 class Cliente():
-  def __init__(self, cpf, nome, email, senha, telefone1, telefone2):
+  def __init__(self, cpf, nome, email, senha, telefone1, telefone2, endereco):
     self.cpf = cpf
     self.nome = nome
     self.email = email
     self.senha = senha
     self.telefone1 = telefone1
     self.telefone2 = telefone2
+    self.endereco = endereco
 
   def Buscar_Comida(self):
     conn = db.Init_db()
@@ -114,7 +115,8 @@ class Cliente():
     cur = conn.cursor()
 
     try:
-      cur.execute(f"INSERT INTO cliente VALUES ('{self.cpf}', '{self.nome}', '{self.email}', '{self.senha}', '{self.telefone1}', '{self.telefone2}');")
+      cur.execute(f"""INSERT INTO cliente VALUES ('{self.cpf}', '{self.nome}', 
+      '{self.email}', '{self.senha}', '{self.telefone1}', '{self.telefone2}', '{self.endereco}');""")
       conn.commit()
     except OSError as err:
       raise Exception (f"{err}")

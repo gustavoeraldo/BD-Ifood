@@ -4,13 +4,14 @@ import random
 from db import db
 
 class Restaurante:
-  def __init__(self, cnpj, email, senha, nome, entrega, aberto ):
+  def __init__(self, cnpj, email, senha, nome, entrega, aberto, endereco ):
     self.cnpj = cnpj
     self.email = email
     self.senha =senha
     self.nome = nome
     self.entrega = entrega
     self.aberto = aberto
+    self.endereco = endereco
   
   def Cadastrar(self):
     conn = db.Init_db()
@@ -18,7 +19,8 @@ class Restaurante:
 
     try:
       cur.execute(f"""INSERT INTO restaurante VALUES
-      ('{self.cnpj}', '{self.email}', '{self.senha}', '{self.nome}', {self.entrega}, '{self.aberto}');""")
+      ('{self.cnpj}', '{self.email}', '{self.senha}', '{self.nome}',
+      {self.entrega}, '{self.aberto}', '{self.endereco}');""")
       conn.commit()
     except Exception as err:
       raise Exception (f'Erro no cadastro do restaurante. {err}') 

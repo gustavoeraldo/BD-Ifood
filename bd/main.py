@@ -67,14 +67,15 @@ def Cadastro():# Cria Cliente ou restaurante
     nome = input('Digite seu nome: ')
     email = input('Digite seu email: ')
     senha = input('Digite seu senha: ')
+    endereco = input('Informe seu endereco: ')
     telefone1 = input('Digite telefone principal: ')
     telefone2 = input('Digite telefone secundário (opcional): ')
 
-    cliente = Cliente(cpf, nome, email, senha, telefone1, telefone2)
+    cliente = Cliente(cpf, nome, email, senha, telefone1, telefone2, endereco)
     try:
       cadastro_req = cliente.Cadastrar()# Efetua o cadastro
     except Exception as e:#e.__class__
-      resposta = input('''Ocorreu erro no cadastro, revise suas informações.
+      resposta = input(f'''Ocorreu erro no cadastro, revise suas informações.{e}
       Você deseja redirecionado para o cadastro novamente ?
       (S/N) -> ''')
     
@@ -92,14 +93,19 @@ def Cadastro():# Cria Cliente ou restaurante
     cnpj = input('Digite seu cnpj: ')
     nome = input('Digite seu nome: ')
     entrega = input('Digite o valor da entrega: ')
+    endereco = input('Informe seu endereço: ')
     email = input('Digite seu email: ')
     senha = input('Digite seu senha: ')
+    aberto = input("""Informe se o restaurante está aberto: 
+    [ 0 ] - Não
+    [ 1 ] - Sim
+    """)
     
-    restaurante = Restaurante(cnpj, email, senha, nome, entrega, True)
+    restaurante = Restaurante(cnpj, email, senha, nome, entrega, aberto, endereco)
     try:
       cadastro_req = restaurante.Cadastrar()
     except Exception as e:
-      resposta = input('''Ocorreu erro no cadastro, revise suas informações.
+      resposta = input(f'''Ocorreu erro no cadastro, revise suas informações.{e}
       Você deseja redirecionado para o cadastro novamente ?
       (S/N) -> ''')
 
