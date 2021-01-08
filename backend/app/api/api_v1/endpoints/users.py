@@ -5,6 +5,9 @@ from typing import List
 from models.user import UserBase, UserCreate
 from db.database import SessionLocal, engine
 import crud 
+from db import models
+
+models.Base.metadata.create_all(bind=engine)
 
 router = APIRouter()
 

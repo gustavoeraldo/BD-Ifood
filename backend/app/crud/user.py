@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 
 from models.user import UserBase
+from db import models
 
 def get():
   return {
@@ -11,8 +12,9 @@ def get_multi():
   return [{'Name':'User 1'}, {'Name':'User 2'}]
 
 def create_user(db:Session, user_in: UserBase):
-  db.add(user_in)
+  db_user = models.User(name=user_in.name,email=user_in.email)
+  db.add(db_user)
   db.commit()
-  db.refresh(user_in)
+  db.refresh(db_user)
 
-  return user_in
+  return db_user
