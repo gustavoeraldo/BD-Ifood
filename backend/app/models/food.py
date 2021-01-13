@@ -1,11 +1,16 @@
-from typing import List, Optional, Union 
-from pydantic import BaseModel
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
+from sqlalchemy.orm import relationship
 
-# class FoodBase(BaseModel):
-#   id = int
-#   name = str
-#   price = float
-#   description = Optional[str]
-#   owner_id = int
-#   class Config:
-#     orm_mode = True
+# from db.models import User
+from db.database import Base
+
+class Food(Base):
+  __tablename__ = 'food'
+
+  id = Column(Integer, primary_key=True, index=True)
+  name = Column(String, unique=True, index=True)
+  price = Column(Float, index=True)
+  description = Column(String, index=True)
+  owner_id = Column(Integer, ForeignKey('users_t.id'))
+
+  owner = relationship('User', back_populates='food')

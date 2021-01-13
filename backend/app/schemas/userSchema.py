@@ -21,6 +21,8 @@ class UserBase(BaseModel):
 
 class UserInDB(UserBase):
   id: int
+  hashed_password: str
+
 
 class UserToken(BaseModel):
   username: str
@@ -28,5 +30,6 @@ class UserToken(BaseModel):
   full_name: Optional[str] = None
   active: Optional[bool] = False
 
-class UserTokenInDB(UserToken):
-  hashed_password: str
+
+class UserUpdate(UserBase):
+  pass
