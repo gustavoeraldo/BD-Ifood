@@ -5,7 +5,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
   API_V1_STR: str = "/api/v1"
-  SECRET_KEY: str = secrets.token_urlsafe(32)
+  SECRET_KEY: str = 'u3iVLzL_A7vBurgiOksFMzg4RTKzp8GEVzQkBW1gUe0SRb2-01aRVor4HUsYe6TjoTAjEzACuna55KLysHVP2A'#secrets.token_urlsafe(32)
   ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8# expires in 8 days
 
   # Database server

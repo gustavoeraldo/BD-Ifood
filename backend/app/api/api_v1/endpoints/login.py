@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import Any
+from jose import JWTError, jwt
 
 from schemas.token import Token, TokenPayload
 from core.security import create_access_token
@@ -11,7 +12,7 @@ from db.models import User
 
 router = APIRouter()
 
-@router.post('/', response_model=Token)
+@router.post('', response_model=Token)
 async def login_access_token(
   form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
   ) -> Any:
@@ -27,13 +28,12 @@ async def login_access_token(
       headers={'WWW-Authenticate': 'Bearer'}
     )
 
-  access_token = create_access_token(data={'sub': form_data.username, 'type': 'costumer'})
-  
+  access_token = create_access_token(data={'id': user_db.id})
   return {
     'access_token': access_token,
     'token_type': 'bearer',
-    'user_type': 'costumer'
+    'user_type': 'costumer',
   }
 
-# password-recovery
-# reset-password
+# password-recovery (to do)
+# reset-password (to do)

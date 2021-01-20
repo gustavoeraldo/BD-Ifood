@@ -4,8 +4,8 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
   name : str
   email: EmailStr
-  cnpj_cpf : str
-  password : str
+  cpf_cnpj : str
+  hashed_password : str
   
   class Config:
     orm_mode = True

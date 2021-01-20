@@ -9,7 +9,7 @@ from .base import CRUDBase
 class CRUDUser(CRUDBase[models.User, UserBase, UserUpdate]):
   def get_user(self, db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
-
+    
 
   def create_user(self, db:Session, user_in: UserBase):
     db_user = models.User(
